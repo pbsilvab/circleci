@@ -17,6 +17,7 @@ export class WebhookMgr {
     let reference = this.extractReference(payload.pipeline.vcs.branch);
     console.log(`Reference: ${reference}`)
     let record;
+    //Get record name with branch / commit subject / commit description
     if (reference) {
       try {
         record = await getRecord(reference.type, reference.referenceNum, false);
@@ -168,6 +169,6 @@ export class WebhookMgr {
     return null;
   }
 
-  constructor(private resource: ICircleCIResource, private payload: any, private identifier = IDENTIFIER) { }
+  constructor(private resource: ICircleCIEventType, private payload: any, private identifier = IDENTIFIER) { }
 
 }

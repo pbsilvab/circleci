@@ -1,5 +1,4 @@
 import React from "react";
-import { convertStrToDate } from "@helpers/convertStrToDate";
 import AttributeCard from "./AttributeCard";
 
 export type AttributeProps = {

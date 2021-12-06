@@ -9,7 +9,7 @@ declare interface AvatarType {
 }
 
 declare type IAhaReferenceType = "Epic" | "Feature" | "Requirement";
-
+declare interface IAhaReference { type: IAhaReferenceType; referenceNum: string }
 declare type ICircleCIResource = "job-completed" | "workflow-completed";
 
 declare type ICircleCIEventType = "workflow-completed" | "job-completed";

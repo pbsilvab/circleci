@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { calcTimeElapsed } from "@helpers/dateTime";
 
 export type AttributeCardProps = {
   branches?: IBranchType[];
@@ -11,14 +12,15 @@ export const IconText = (props: { icon: string; text?: string; style?: any; icon
   </span>
 );
 
-const StatusIcon = (props: { status: boolean }) => {
+const StatusIcon = ({ status, style = {} }: { status: boolean; style?: any }) => {
   return (
     <>
-      {props.status && (
+      {status && (
         <IconText
           icon="fa-solid fa-check-circle"
           text="Success"
           style={{
+            ...style,
             color: "#3eb268",
             backgroundColor: "#caf3d1",
             fontSize: "12px",
@@ -27,11 +29,12 @@ const StatusIcon = (props: { status: boolean }) => {
           }}
         />
       )}
-      {!props.status && (
+      {!status && (
         <IconText
           icon="fa-solid fa-check-circle"
           text="Failed"
           style={{
+            ...style,
             color: "red",
             backgroundColor: "#ffc0c0",
             fontSize: "12px",
@@ -44,28 +47,32 @@ const StatusIcon = (props: { status: boolean }) => {
   );
 };
 
-const HoverCard = (props: { buildNum: number; workflow: string; commit: string; author: string }) => (
-  <div
-    style={{
-      position: "absolute",
-      background: "white",
-      top: "-55px",
-      boxShadow: "0px 0px 5px 1px #a5a5a5",
-      padding: "10px",
-      fontSize: "12px",
-    }}
-  >
-    <aha-flex direction="column">
-      <span>Build #: {props.buildNum}</span>
-      <span>Workflow: {props.workflow}</span>
-      <span>Commit: {props.commit}</span>
-      <span>Author: {props.author}</span>
-    </aha-flex>
-  </div>
-);
+const HoverCard = (props: { buildNum: number; workflow: string; commit: string; author: string; style?: any }) => {
+  props.style = props.style || {};
+  return (
+    <div
+      style={{
+        position: "absolute",
+        background: "white",
+        top: "-55px",
+        boxShadow: "0px 0px 5px 1px #a5a5a5",
+        padding: "10px",
+        fontSize: "12px",
+        ...props.style,
+      }}
+    >
+      <aha-flex direction="column">
+        <span>Build #: {props.buildNum}</span>
+        <span>Workflow: {props.workflow}</span>
+        <span>Commit: {props.commit}</span>
+        <span>Author: {props.author}</span>
+      </aha-flex>
+    </div>
+  );
+};
 
 const AttributeCard = (props: AttributeCardProps) => {
-  const [isHover, setIsHover] = React.useState(false);
+  const [hovers, setHovers] = React.useState<boolean[]>([false]);
   return (
     <div
       style={{
@@ -76,39 +83,50 @@ const AttributeCard = (props: AttributeCardProps) => {
         cursor: "pointer",
       }}
     >
-      {props.branches.map((branch) => (
+      {props.branches.map((branch, index) => (
         <div
           style={{
             // backgroundColor: "var(--theme-tertiary-background)",
+
             display: "flex",
-            justifyContent: "space-between",
+            padding: "5px",
+            margin: "10px 0",
+            ...(hovers[index] ? { backgroundColor: "lightblue" } : {}),
           }}
           onMouseOver={() => {
-            setIsHover(true);
+            let tmpHovers = [...hovers];
+            tmpHovers[index] = true;
+            setHovers(tmpHovers);
           }}
           onMouseOut={() => {
-            setIsHover(false);
+            let tmpHovers = [...hovers];
+            tmpHovers[index] = false;
+            setHovers(tmpHovers);
           }}
         >
           <IconText
             icon="fa-regular fa-code-branch"
             text={branch.branch}
-            style={{ fontSize: "12px" }}
+            style={{ fontSize: "12px", flexGrow: 1 }}
             iconStyle={{ color: "#1082d5" }}
           />
-          <StatusIcon status={branch.status === "success" ? true : false} />
+          <StatusIcon
+            status={branch.status === "success" ? true : false}
+            style={{ marginRight: "60px", width: "70px" }}
+          />
           <IconText
-            icon="fa-solid fa-clock type-icon"
-            text={new Date(branch.happened_at).toDateString()}
-            style={{ fontSize: "12px" }}
+            icon="fa-regular fa-clock type-icon"
+            text={calcTimeElapsed(branch.happened_at)}
+            style={{ fontSize: "12px", width: "110px" }}
             iconStyle={{ color: "#1082d5" }}
           />
-          {isHover && (
+          {hovers[index] && (
             <HoverCard
               buildNum={branch.buildNum}
               author={branch.author.name}
               commit={branch.commit}
               workflow={branch.workflow}
+              style={{ top: `${-5 + 40 * (index - 1)}px` }}
             />
           )}
         </div>

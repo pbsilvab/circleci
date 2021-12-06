@@ -1,3 +1,4 @@
+import moment from 'moment'
 const months = {
   0: "Jan",
   1: "Feb",
@@ -20,7 +21,10 @@ export const convertStrToDate = (str: string | number) => {
   const date = new Date(str);
   const now = new Date();
 
-  return `${months[date.getMonth()]} ${date.getDate()}${
-    date.getFullYear() === now.getFullYear() ? "" : ` ${date.getFullYear()}`
-  }`;
+  return `${months[date.getMonth()]} ${date.getDate()}${date.getFullYear() === now.getFullYear() ? "" : ` ${date.getFullYear()}`
+    }`;
 };
+
+export const calcTimeElapsed = (date: Date | string | number): string => {
+  return moment(new Date(date)).fromNow()
+}

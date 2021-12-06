@@ -12,13 +12,73 @@ export class WebhookMgr {
    */
   static webhookHandler = async ({ headers, payload }, { identifier, settings }) => {
     console.log(`===== Received CircleCI ${identifier} =====`);
-    // console.log(`===== Received CircleCI Payload: ${payload} =====`);
     let fields: ICircleCIFields = {};
     //Accepts only brances that follow Aha! naming convention
-    const reference = this.extractReference(payload.pipeline.vcs.branch);
-    console.log("~~~~~branch name: " + reference)
-    const record = await getRecord(reference.type, reference.referenceNum, false);
+    let reference = this.extractReference(payload.pipeline.vcs.branch);
+    console.log(`Reference: ${reference}`)
+    let record;
     if (reference) {
+      try {
+        record = await getRecord(reference.type, reference.referenceNum, false);
+      } catch (error) {
+        console.log("first error: ");
+        reference = this.extractReference(payload.pipeline.vcs.commit.subject);
+        if (reference) {
+          try {
+            record = await getRecord(reference.type, reference.referenceNum, false);
+          } catch (error) {
+            reference = this.extractReference(payload.pipeline.vcs.commit.body);
+            if (reference) {
+              try {
+                record = await getRecord(reference.type, reference.referenceNum, false);
+              } catch (error) {
+                console.log(`========= ${error.message}`);
+                return;
+              }
+            }
+          }
+        } else {
+          reference = this.extractReference(payload.pipeline.vcs.commit.body);
+          if (reference) {
+            try {
+              record = await getRecord(reference.type, reference.referenceNum, false);
+            } catch (error) {
+              console.log(`========= ${error.message}`);
+              return;
+            }
+          }
+        }
+      }
+    } else {
+      reference = this.extractReference(payload.pipeline.vcs.commit.subject);
+      if (reference) {
+        try {
+          record = await getRecord(reference.type, reference.referenceNum, false);
+        } catch (error) {
+          reference = this.extractReference(payload.pipeline.vcs.commit.body);
+          if (reference) {
+            try {
+              record = await getRecord(reference.type, reference.referenceNum, false);
+            } catch (error) {
+              console.log(`========= ${error.message}`);
+              return;
+            }
+          }
+        }
+      } else {
+        reference = this.extractReference(payload.pipeline.vcs.commit.body);
+        if (reference) {
+          try {
+            record = await getRecord(reference.type, reference.referenceNum, false);
+          } catch (error) {
+            console.log(`========= ${error.message}`);
+            return;
+          }
+        }
+      }
+    }
+
+    if (record) {
       const project = await record.getExtensionField(identifier, "project");
       const branches = await record.getExtensionField(identifier, "branches");
       const permalink = await record.getExtensionField(identifier, "permalink");
@@ -61,9 +121,20 @@ export class WebhookMgr {
         fields.branches = [branchInfo];
       }
       await setExtensionFields(record, fields, identifier);
+    } else {
+      console.log("======== Record not found")
     }
 
   };
+
+  /**
+   * 
+   * @param {string} referenceVal
+   * @returns {object | null} :Record or null
+   */
+  static extractRecord = (referenceVal: string) => {
+
+  }
 
   /**
    * Extract reference from branch name 

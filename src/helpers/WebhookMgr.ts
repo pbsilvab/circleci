@@ -15,7 +15,6 @@ export class WebhookMgr {
     let fields: ICircleCIFields = {};
     //Accepts only brances that follow Aha! naming convention
     let reference = this.extractReference(payload.pipeline.vcs.branch);
-    console.log(`Reference: ${reference}`)
     let record;
     //Get record name with branch / commit subject / commit description
     if (reference) {
@@ -23,12 +22,12 @@ export class WebhookMgr {
         record = await getRecord(reference.type, reference.referenceNum, false);
       } catch (error) {
         console.log("first error: ");
-        reference = this.extractReference(payload.pipeline.vcs.commit.subject);
+        reference = this.extractReference(payload.pipeline.vcs.commit.subject || "");
         if (reference) {
           try {
             record = await getRecord(reference.type, reference.referenceNum, false);
           } catch (error) {
-            reference = this.extractReference(payload.pipeline.vcs.commit.body);
+            reference = this.extractReference(payload.pipeline.vcs.commit.body || "");
             if (reference) {
               try {
                 record = await getRecord(reference.type, reference.referenceNum, false);
@@ -39,7 +38,7 @@ export class WebhookMgr {
             }
           }
         } else {
-          reference = this.extractReference(payload.pipeline.vcs.commit.body);
+          reference = this.extractReference(payload.pipeline.vcs.commit.body || "");
           if (reference) {
             try {
               record = await getRecord(reference.type, reference.referenceNum, false);
@@ -51,12 +50,12 @@ export class WebhookMgr {
         }
       }
     } else {
-      reference = this.extractReference(payload.pipeline.vcs.commit.subject);
+      reference = this.extractReference(payload.pipeline.vcs.commit.subject || "");
       if (reference) {
         try {
           record = await getRecord(reference.type, reference.referenceNum, false);
         } catch (error) {
-          reference = this.extractReference(payload.pipeline.vcs.commit.body);
+          reference = this.extractReference(payload.pipeline.vcs.commit.body || "");
           if (reference) {
             try {
               record = await getRecord(reference.type, reference.referenceNum, false);
@@ -67,7 +66,7 @@ export class WebhookMgr {
           }
         }
       } else {
-        reference = this.extractReference(payload.pipeline.vcs.commit.body);
+        reference = this.extractReference(payload.pipeline.vcs.commit.body || "");
         if (reference) {
           try {
             record = await getRecord(reference.type, reference.referenceNum, false);
@@ -112,7 +111,9 @@ export class WebhookMgr {
             happened_at: branchInfo.happened_at,
             commit: branchInfo.commit,
             author: { name: payload.pipeline.vcs.commit.author.name },
-            buildNum: payload.pipeline.number
+            buildNum: payload.pipeline.number,
+            status: payload.workflow.status,
+            workflow: payload.workflow.name
           }
         } else {
           fields.branches = [...branches ?? []];

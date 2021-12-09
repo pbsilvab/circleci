@@ -7,15 +7,16 @@ export type AttributeProps = {
 };
 
 const Attribute = ({ fields, record }: AttributeProps) => {
-  console.log("~~~~~ permalink: ", fields);
   return (
     <aha-flex align-items="left" direction="column" gap="5px">
-      <aha-flex>
-        <span className="type-icon">
-          <aha-icon icon="fa-solid fa-bookmark type-icon" />
-          <span style={{ marginLeft: "5px", fontWeight: "bold" }}>{fields.project}</span>
-        </span>
-      </aha-flex>
+      {fields.project && (
+        <aha-flex>
+          <span className="type-icon">
+            <aha-icon icon="fa-solid fa-bookmark type-icon" />
+            <span style={{ marginLeft: "5px", fontWeight: "bold" }}>{fields.project}</span>
+          </span>
+        </aha-flex>
+      )}
       {fields.branches && <AttributeCard branches={fields.branches} />}
       <aha-flex direction="row" justify-content="flex-end">
         <aha-button kind="secondary" href={fields.permalink} size="mini" target="_blank">

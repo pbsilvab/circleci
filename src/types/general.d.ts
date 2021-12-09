@@ -22,17 +22,17 @@ declare interface ICircleCIEventUser {
 }
 
 declare interface IBranchType {
-  type: ICircleCIEventType;
-  status: ICircleCIEventStatus;
-  branch: string;
+  type: ICircleCIEventType; // Type of build: workflow or job
+  status: ICircleCIEventStatus; // Workflow result status(success | fail)
+  branch: string; // Branch name
   happened_at: Date;
-  workflow: string;
-  commit: string;
-  author: ICircleCIEventUser;
-  buildNum: number;
+  workflow: string; // Workflow name
+  commit: string; // Commit subject
+  author: ICircleCIEventUser; // Commit Author
+  buildNum: number; // Pipeline number
 }
 declare interface ICircleCIFields {
   project?: string;
   branches?: IBranchType[];
-  permalink?: string;
+  permalink?: string; // Redirect link to CircleCI
 }

@@ -13,13 +13,20 @@ const Attribute = ({ fields, record }: AttributeProps) => {
         <aha-flex>
           <span className="type-icon">
             <aha-icon icon="fa-solid fa-bookmark type-icon" />
-            <span style={{ marginLeft: "5px", fontWeight: "bold" }}>{fields.project}</span>
+            <span style={{ marginLeft: "5px", fontWeight: "bold" }}>
+              {fields.project}
+            </span>
           </span>
         </aha-flex>
       )}
       {fields.branches && <AttributeCard branches={fields.branches} />}
       <aha-flex direction="row" justify-content="flex-end">
-        <aha-button kind="secondary" href={fields.permalink} size="mini" target="_blank">
+        <aha-button
+          kind="secondary"
+          href={fields.permalink}
+          size="mini"
+          target="_blank"
+        >
           View in CircleCI
         </aha-button>
       </aha-flex>

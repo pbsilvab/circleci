@@ -5,14 +5,28 @@ export type AttributeCardProps = {
   branches?: IBranchType[];
 };
 
-export const IconText = (props: { icon: string; text?: string; style?: any; iconStyle?: any }) => (
+export const IconText = (props: {
+  icon: string;
+  text?: string;
+  style?: any;
+  iconStyle?: any;
+}) => (
   <span style={props.style ? { ...props.style } : {}}>
-    <aha-icon icon={`${props.icon} type-icon`} style={props.iconStyle ? { ...props.iconStyle } : {}} />
+    <aha-icon
+      icon={`${props.icon} type-icon`}
+      style={props.iconStyle ? { ...props.iconStyle } : {}}
+    />
     <span style={{ marginLeft: "5px" }}>{props.text}</span>
   </span>
 );
 
-const StatusIcon = ({ status, style = {} }: { status: boolean; style?: any }) => {
+const StatusIcon = ({
+  status,
+  style = {},
+}: {
+  status: boolean;
+  style?: any;
+}) => {
   return (
     <>
       {status && (
@@ -47,7 +61,13 @@ const StatusIcon = ({ status, style = {} }: { status: boolean; style?: any }) =>
   );
 };
 
-const HoverCard = (props: { buildNum: number; workflow: string; commit: string; author: string; style?: any }) => {
+const HoverCard = (props: {
+  buildNum: number;
+  workflow: string;
+  commit: string;
+  author: string;
+  style?: any;
+}) => {
   props.style = props.style || {};
   return (
     <div
@@ -72,7 +92,10 @@ const HoverCard = (props: { buildNum: number; workflow: string; commit: string; 
 };
 
 const AttributeCard = (props: AttributeCardProps) => {
-  const branches = props.branches.sort((a, b) => new Date(b.happened_at).getTime() - new Date(a.happened_at).getTime()); // Sort(Descending) by happened_at
+  const branches = props.branches.sort(
+    (a, b) =>
+      new Date(b.happened_at).getTime() - new Date(a.happened_at).getTime()
+  ); // Sort(Descending) by happened_at
   const initHovers = branches.map((_) => false);
   const [hovers, setHovers] = React.useState<boolean[]>(initHovers);
   return (
